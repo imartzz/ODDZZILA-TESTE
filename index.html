@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OddZilla - Comparador de Odds</title>
+   
+      <div class="oddzilla-container">
+    <div class="sport-tabs">
+        <button class="sport-tab active" data-sport="football">Futebol</button>
+        <button class="sport-tab" data-sport="basketball">Basquete</button>
+    </div>
+
+    <div class="main-content">
+        <div class="vertical-filters">
+            <div class="sport-filters football-filters">
+                <h3>Futebol</h3>
+                <ul>
+                    <li class="competition-item active">Brasileirão</li>
+                    <li class="competition-item">Libertadores</li>
+                </ul>
+            </div>
+            
+            <div class="sport-filters basketball-filters" style="display:none">
+                <h3>Basquete</h3>
+                <ul>
+                    <li class="competition-item active">NBB</li>
+                    <li class="competition-item">NBA</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="odds-tables">
+            <div class="odds-table football-table">
+                <div class="table-header">Futebol - Brasileirão</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Horário</th>
+                            <th>Casa</th>
+                            <th>X</th>
+                            <th>Fora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>20:00</td>
+                            <td>
+                                Flamengo
+                                <div class="odd">1.85 <span class="bookmaker betano">betano</span></div>
+                            </td>
+                            <td>
+                                <div class="odd">3.40 <span class="bookmaker bet365">bet365</span></div>
+                            </td>
+                            <td>
+                                Vasco
+                                <div class="odd">4.10 <span class="bookmaker betfair">betfair</span></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="odds-table basketball-table" style="display:none">
+                <div class="table-header">Basquete - NBB</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Horário</th>
+                            <th>Casa</th>
+                            <th>X</th>
+                            <th>Fora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>19:00</td>
+                            <td>
+                                Flamengo
+                                <div class="odd">2.00 <span class="bookmaker betano">betano</span></div>
+                            </td>
+                            <td></td>
+                            <td>
+                                São Paulo
+                                <div class="odd">4.20 <span class="bookmaker bet365">bet365</span></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .oddzilla-container {
+        font-family: Arial, sans-serif;
+        max-width: 1000px;
+        margin: 0 auto;
+        background: #0a192f;
+        color: #ccd6f6;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .sport-tabs {
+        display: flex;
+        border-bottom: 2px solid #172a45;
+        padding: 0 20px;
+    }
+    
+    .sport-tab {
+        padding: 12px 20px;
+        background: none;
+        border: none;
+        color: #ccd6f6;
+        font-size: 1.1rem;
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .sport-tab:hover {
+        color: #64ffda;
+    }
+    
+    .sport-tab.active {
+        color: #64ffda;
+        font-weight: bold;
+    }
+    
+    .sport-tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #64ffda;
+    }
+
+    .main-content {
+        display: flex;
+    }
+
+    .vertical-filters {
+        width: 200px;
+        padding: 20px;
+        background: #172a45;
+        border-right: 1px solid #303f60;
+    }
+    
+    .sport-filters h3 {
+        margin: 0 0 15px 0;
+        color: #64ffda;
+        font-size: 1.2rem;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #303f60;
+    }
+    
+    .sport-filters ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .competition-item {
+        padding: 10px 15px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease;
+    }
+    
+    .competition-item:hover {
+        background: #303f60;
+    }
+    
+    .competition-item.active {
+        border-left: 3px solid #64ffda;
+        background: #303f60;
+        color: #64ffda;
+        font-weight: bold;
+    }
+
+    .odds-tables {
+        flex: 1;
+    }
+    
+    .odds-table {
+        background: #172a45;
+    }
+    
+    .table-header {
+        padding: 15px 20px;
+        font-weight: bold;
+        font-size: 1.1rem;
+        background: #303f60;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th {
+        padding: 12px 20px;
+        text-align: left;
+        background: rgba(0,0,0,0.2);
+    }
+    
+    td {
+        padding: 15px 20px;
+        border-bottom: 1px solid #303f60;
+    }
+    
+    .odd {
+        color: #ff5555;
+        font-weight: bold;
+        margin-top: 5px;
+    }
+    
+    .bookmaker {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        margin-left: 8px;
+    }
+    
+    .betano { background: #28a745; color: white; }
+    .bet365 { background: #007bff; color: white; }
+    .betfair { background: #ff6a00; color: white; }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.sport-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const sport = this.dataset.sport;
+                
+                document.querySelector('.football-filters').style.display = sport === 'football' ? 'block' : 'none';
+                document.querySelector('.basketball-filters').style.display = sport === 'basketball' ? 'block' : 'none';
+                
+                document.querySelector('.football-table').style.display = sport === 'football' ? 'block' : 'none';
+                document.querySelector('.basketball-table').style.display = sport === 'basketball' ? 'block' : 'none';
+            });
+        });
+        
+        document.querySelectorAll('.competition-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const list = this.parentElement;
+                list.querySelector('.active').classList.remove('active');
+                this.classList.add('active');
+                
+                console.log('Competição selecionada:', this.textContent);
+            });
+        });
+    });
+</script>
