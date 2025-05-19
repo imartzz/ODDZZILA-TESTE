@@ -16,20 +16,40 @@
     <section class="form-add">
       <h2>Adicionar Novo Jogo</h2>
       <form id="add-game-form">
+        <select id="esporte" required>
+          <option value="">Selecione Esporte</option>
+        </select>
+
+        <select id="competicao" disabled required>
+          <option value="">Selecione Competição</option>
+        </select>
+
         <input type="text" id="time_casa" placeholder="Time Casa" required>
         <input type="text" id="time_fora" placeholder="Time Fora" required>
         <input type="datetime-local" id="horario" required>
 
-        <select id="competicao" required>
-          <option value="">Selecione Competição</option>
-        </select>
+        <div class="odds-container">
+          <div class="bookmaker">
+            <h3>Bet365</h3>
+            <input type="number" step="0.01" id="bet365_casa" placeholder="Casa" required>
+            <input type="number" step="0.01" id="bet365_empate" placeholder="Empate" class="empate-input">
+            <input type="number" step="0.01" id="bet365_fora" placeholder="Fora" required>
+          </div>
 
-        <input type="number" step="0.01" id="bet365_casa" placeholder="Bet365 Casa" required>
-        <input type="number" step="0.01" id="bet365_fora" placeholder="Bet365 Fora" required>
-        <input type="number" step="0.01" id="betano_casa" placeholder="Betano Casa" required>
-        <input type="number" step="0.01" id="betano_fora" placeholder="Betano Fora" required>
-        <input type="number" step="0.01" id="betfair_casa" placeholder="Betfair Casa" required>
-        <input type="number" step="0.01" id="betfair_fora" placeholder="Betfair Fora" required>
+          <div class="bookmaker">
+            <h3>Betano</h3>
+            <input type="number" step="0.01" id="betano_casa" placeholder="Casa" required>
+            <input type="number" step="0.01" id="betano_empate" placeholder="Empate" class="empate-input">
+            <input type="number" step="0.01" id="betano_fora" placeholder="Fora" required>
+          </div>
+
+          <div class="bookmaker">
+            <h3>Betfair</h3>
+            <input type="number" step="0.01" id="betfair_casa" placeholder="Casa" required>
+            <input type="number" step="0.01" id="betfair_empate" placeholder="Empate" class="empate-input">
+            <input type="number" step="0.01" id="betfair_fora" placeholder="Fora" required>
+          </div>
+        </div>
 
         <button type="submit">Adicionar Jogo</button>
       </form>
@@ -43,13 +63,26 @@
           <tr>
             <th>Jogo</th>
             <th>Competição</th>
-            <th>Bet365 Casa</th>
-            <th>Bet365 Fora</th>
-            <th>Betano Casa</th>
-            <th>Betano Fora</th>
-            <th>Betfair Casa</th>
-            <th>Betfair Fora</th>
+            <th>Esporte</th>
+            <th colspan="3">Bet365</th>
+            <th colspan="3">Betano</th>
+            <th colspan="3">Betfair</th>
             <th>Ações</th>
+          </tr>
+          <tr class="subheader">
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>Casa</th>
+            <th>Empate</th>
+            <th>Fora</th>
+            <th>Casa</th>
+            <th>Empate</th>
+            <th>Fora</th>
+            <th>Casa</th>
+            <th>Empate</th>
+            <th>Fora</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="jogos-table"></tbody>

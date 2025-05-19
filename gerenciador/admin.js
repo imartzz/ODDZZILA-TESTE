@@ -1,6 +1,24 @@
 const API_URL = 'https://33765672-f51d-46f5-b276-32beaed4448a-00-3qd9ymtpuc1xv.worf.replit.dev';
 
-// Buscar competições e popular select
+// Elementos DOM
+const elements = {
+  esporteSelect: document.getElementById('esporte'),
+  competicaoSelect: document.getElementById('competicao'),
+  empateInputs: document.querySelectorAll('.empate-input'),
+  form: document.getElementById('add-game-form')
+};
+
+// Obter dados iniciais
+let esportesData = [];
+let competicoesData = [];
+
+// Buscar esportes
+async function fetchEsportes() {
+  const res = await fetch(`${API_URL}/esportes`);
+  return res.json();
+}
+
+// Buscar competições
 async function fetchCompeticoes() {
   const res = await fetch(`${API_URL}/competicoes`);
   return res.json();
@@ -12,16 +30,51 @@ async function fetchJogos() {
   return res.json();
 }
 
-// Renderizar opções de competições no select
-async function populateCompeticoes() {
-  const select = document.getElementById('competicao');
-  const comps = await fetchCompeticoes();
-  comps.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c.id;
-    opt.textContent = c.nome;
-    select.appendChild(opt);
+// Popular select de esportes
+async function populateEsportes() {
+  esportesData = await fetchEsportes();
+  elements.esporteSelect.innerHTML = '<option value="">Selecione Esporte</option>';
+  
+  esportesData.forEach(esporte => {
+    const option = document.createElement('option');
+    option.value = esporte.id;
+    option.textContent = esporte.nome;
+    elements.esporteSelect.appendChild(option);
   });
+}
+
+// Popular select de competições baseado no esporte
+function populateCompeticoes(esporteId) {
+  elements.competicaoSelect.innerHTML = '<option value="">Selecione Competição</option>';
+  elements.competicaoSelect.disabled = !esporteId;
+  
+  if (!esporteId) return;
+  
+  const competicoes = competicoesData.filter(c => c.esporte === esporteId);
+  competicoes.forEach(competicao => {
+    const option = document.createElement('option');
+    option.value = competicao.id;
+    option.textContent = competicao.nome;
+    elements.competicaoSelect.appendChild(option);
+  });
+}
+
+// Mostrar/ocultar campos de empate conforme esporte
+function toggleEmpateFields(esporteId) {
+  const esporte = esportesData.find(e => e.id === esporteId);
+  const showEmpate = esporte?.colunas?.includes('empate');
+  
+  elements.empateInputs.forEach(input => {
+    input.style.display = showEmpate ? 'block' : 'none';
+    input.required = showEmpate;
+    if (!showEmpate) input.value = '';
+  });
+  
+  // Ajustar colunas de empate na tabela
+  document.querySelectorAll('th:nth-child(5), th:nth-child(8), th:nth-child(11)')
+    .forEach(th => th.style.display = showEmpate ? 'table-cell' : 'none');
+  document.querySelectorAll('td:nth-child(5), td:nth-child(8), td:nth-child(11)')
+    .forEach(td => td.style.display = showEmpate ? 'table-cell' : 'none');
 }
 
 // Renderizar tabela de jogos
@@ -29,32 +82,39 @@ function renderTable(jogos) {
   const tbody = document.getElementById('jogos-table');
   tbody.innerHTML = '';
 
-  jogos.forEach(j => {
+  jogos.forEach(jogo => {
+    const esporte = esportesData.find(e => e.id === jogo.esporte);
+    const competicao = competicoesData.find(c => c.id === jogo.competicao);
+    const showEmpate = esporte?.colunas?.includes('empate');
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${j.time_casa} x ${j.time_fora}</td>
-      <td>${j.competicao}</td>
-      <td><input data-id="${j.id}" data-book="bet365" data-type="casa" value="${j.odds.bet365.casa}"></td>
-      <td><input data-id="${j.id}" data-book="bet365" data-type="fora" value="${j.odds.bet365.fora}"></td>
-      <td><input data-id="${j.id}" data-book="betano" data-type="casa" value="${j.odds.betano.casa}"></td>
-      <td><input data-id="${j.id}" data-book="betano" data-type="fora" value="${j.odds.betano.fora}"></td>
-      <td><input data-id="${j.id}" data-book="betfair" data-type="casa" value="${j.odds.betfair?.casa || ''}"></td>
-      <td><input data-id="${j.id}" data-book="betfair" data-type="fora" value="${j.odds.betfair?.fora || ''}"></td>
+      <td>${jogo.time_casa} x ${jogo.time_fora}</td>
+      <td>${competicao?.nome || '-'}</td>
+      <td>${esporte?.nome || '-'}</td>
+      <td><input data-id="${jogo.id}" data-book="bet365" data-type="casa" value="${jogo.odds.bet365.casa}"></td>
+      <td style="display: ${showEmpate ? 'table-cell' : 'none'}"><input data-id="${jogo.id}" data-book="bet365" data-type="empate" value="${jogo.odds.bet365.empate || ''}"></td>
+      <td><input data-id="${jogo.id}" data-book="bet365" data-type="fora" value="${jogo.odds.bet365.fora}"></td>
+      <td><input data-id="${jogo.id}" data-book="betano" data-type="casa" value="${jogo.odds.betano.casa}"></td>
+      <td style="display: ${showEmpate ? 'table-cell' : 'none'}"><input data-id="${jogo.id}" data-book="betano" data-type="empate" value="${jogo.odds.betano.empate || ''}"></td>
+      <td><input data-id="${jogo.id}" data-book="betano" data-type="fora" value="${jogo.odds.betano.fora}"></td>
+      <td><input data-id="${jogo.id}" data-book="betfair" data-type="casa" value="${jogo.odds.betfair?.casa || ''}"></td>
+      <td style="display: ${showEmpate ? 'table-cell' : 'none'}"><input data-id="${jogo.id}" data-book="betfair" data-type="empate" value="${jogo.odds.betfair?.empate || ''}"></td>
+      <td><input data-id="${jogo.id}" data-book="betfair" data-type="fora" value="${jogo.odds.betfair?.fora || ''}"></td>
       <td>
-        <button data-id="${j.id}">Salvar</button>
-        <button class="delete-btn" data-id="${j.id}">Excluir</button>
+        <button class="save-btn" data-id="${jogo.id}">Salvar</button>
+        <button class="delete-btn" data-id="${jogo.id}">Excluir</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
 
-  // Listeners
-  tbody.querySelectorAll('button').forEach(btn => {
-    if (btn.classList.contains('delete-btn')) {
-      btn.onclick = () => deleteGame(btn.dataset.id);
-    } else {
-      btn.onclick = () => updateOdds(btn.dataset.id);
-    }
+  // Event listeners
+  tbody.querySelectorAll('.save-btn').forEach(btn => {
+    btn.onclick = () => updateOdds(btn.dataset.id);
+  });
+  tbody.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.onclick = () => deleteGame(btn.dataset.id);
   });
 }
 
@@ -62,12 +122,15 @@ function renderTable(jogos) {
 async function updateOdds(id) {
   const inputs = document.querySelectorAll(`input[data-id="${id}"]`);
   const odds = { bet365: {}, betano: {}, betfair: {} };
+  const jogo = (await fetchJogos()).find(j => j.id === id);
+  const esporte = esportesData.find(e => e.id === jogo.esporte);
+  const showEmpate = esporte?.colunas?.includes('empate');
 
   inputs.forEach(input => {
     const { book, type } = input.dataset;
-    odds[book][type] = parseFloat(input.value);
+    if (type === 'empate' && !showEmpate) return;
+    odds[book][type] = parseFloat(input.value) || 0;
   });
-  ['bet365','betano','betfair'].forEach(b => odds[b].atualizado = new Date().toISOString());
 
   await fetch(`${API_URL}/jogos/${id}`, {
     method: 'PATCH',
@@ -75,7 +138,7 @@ async function updateOdds(id) {
     body: JSON.stringify({ odds })
   });
   alert('Odds atualizadas!');
-  load();
+  loadData();
 }
 
 // Excluir jogo
@@ -83,39 +146,79 @@ async function deleteGame(id) {
   if (!confirm('Confirmar exclusão do jogo?')) return;
   await fetch(`${API_URL}/jogos/${id}`, { method: 'DELETE' });
   alert('Jogo excluído!');
-  load();
+  loadData();
 }
 
 // Adicionar novo jogo
-document.getElementById('add-game-form').addEventListener('submit', async e => {
+elements.form.addEventListener('submit', async e => {
   e.preventDefault();
-  const form = e.target;
+  
+  const esporteId = elements.esporteSelect.value;
+  const esporte = esportesData.find(e => e.id === esporteId);
+  const showEmpate = esporte?.colunas?.includes('empate');
+
   const novoJogo = {
-    time_casa: form.time_casa.value,
-    time_fora: form.time_fora.value,
-    horario: form.horario.value,
-    competicao: form.competicao.value,
+    time_casa: elements.form.time_casa.value,
+    time_fora: elements.form.time_fora.value,
+    horario: elements.form.horario.value,
+    competicao: elements.form.competicao.value,
+    esporte: esporteId,
     odds: {
-      bet365: { casa: parseFloat(form.bet365_casa.value), fora: parseFloat(form.bet365_fora.value), atualizado: new Date().toISOString() },
-      betano: { casa: parseFloat(form.betano_casa.value), fora: parseFloat(form.betano_fora.value), atualizado: new Date().toISOString() },
-      betfair: { casa: parseFloat(form.betfair_casa.value), fora: parseFloat(form.betfair_fora.value), atualizado: new Date().toISOString() }
+      bet365: {
+        casa: parseFloat(elements.form.bet365_casa.value),
+        fora: parseFloat(elements.form.bet365_fora.value),
+        empate: showEmpate ? parseFloat(elements.form.bet365_empate.value) : undefined,
+        atualizado: new Date().toISOString()
+      },
+      betano: {
+        casa: parseFloat(elements.form.betano_casa.value),
+        fora: parseFloat(elements.form.betano_fora.value),
+        empate: showEmpate ? parseFloat(elements.form.betano_empate.value) : undefined,
+        atualizado: new Date().toISOString()
+      },
+      betfair: {
+        casa: parseFloat(elements.form.betfair_casa.value),
+        fora: parseFloat(elements.form.betfair_fora.value),
+        empate: showEmpate ? parseFloat(elements.form.betfair_empate.value) : undefined,
+        atualizado: new Date().toISOString()
+      }
     }
   };
+
   await fetch(`${API_URL}/jogos`, {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify(novoJogo)
   });
+  
   alert('Jogo adicionado!');
-  form.reset();
-  load();
+  elements.form.reset();
+  loadData();
 });
 
-// Carregar tudo
-async function load() {
-  await populateCompeticoes();
-  const jogos = await fetchJogos();
-  renderTable(jogos);
+// Event listeners
+elements.esporteSelect.addEventListener('change', () => {
+  const esporteId = elements.esporteSelect.value;
+  populateCompeticoes(esporteId);
+  toggleEmpateFields(esporteId);
+});
+
+// Carregar todos os dados
+async function loadData() {
+  try {
+    [esportesData, competicoesData] = await Promise.all([
+      fetchEsportes(),
+      fetchCompeticoes()
+    ]);
+    
+    await populateEsportes();
+    const jogos = await fetchJogos();
+    renderTable(jogos);
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+    alert('Erro ao carregar dados do servidor');
+  }
 }
 
-load();
+// Inicialização
+document.addEventListener('DOMContentLoaded', loadData);
